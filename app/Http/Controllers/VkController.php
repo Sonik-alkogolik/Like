@@ -5,25 +5,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use App\Models\UserGroup;
 
 class VkController extends Controller
 {
-    public function getGroups(Request $request)
-    {
-        $userId = $request->input('user_id');
-        $accessToken = $request->input('access_token');
-        $version = $request->input('v');
-        $extended = $request->input('extended');
+    // public function getGroups(Request $request)
+    // {
+    //     $userId = $request->input('user_id');
+    //     $accessToken = $request->input('access_token');
+    //     $version = $request->input('v');
+    //     $extended = $request->input('extended');
 
-        $response = Http::get('https://api.vk.com/method/groups.get', [
-            'user_id' => $userId,
-            'access_token' => $accessToken,
-            'v' => $version,
-            'extended' => $extended,
-        ]);
+    //     $response = Http::get('https://api.vk.com/method/groups.get', [
+    //         'user_id' => $userId,
+    //         'access_token' => $accessToken,
+    //         'v' => $version,
+    //         'extended' => $extended,
+    //     ]);
 
-        return response()->json($response->json());
-    }
+    //     return response()->json($response->json());
+    // }
 
     // public function checkGroup(Request $request)
     // {
@@ -51,43 +52,52 @@ class VkController extends Controller
  
 
     public function getGroupsAndCheckGroup(Request $request)
-{
-    \Log::info('Request data:', $request->all());
+    {
+        Log::info('Request data:', $request->all());
 
-    $userId = $request->input('user_id');
-    $accessToken = $request->input('access_token');
-    $version = $request->input('v');
-    $extended = $request->input('extended');
-    $groupId = $request->input('group_id');
+        $userId = $request->input('user_id');
+        $accessToken = $request->input('access_token');
+        $version = $request->input('v');
+        $groupId = $request->input('group_id');
+        $groupLink = $request->input('group_link');
 
-    $response = Http::get('https://api.vk.com/method/groups.get', [
-        'user_id' => $userId,
-        'access_token' => $accessToken,
-        'v' => $version,
-        'extended' => $extended,
-    ]);
-
-    \Log::info('VK API response:', $response->json());
-
-    if (isset($response['response']['items'])) {
-        $groups = $response['response']['items'];
-        $groupExists = collect($groups)->contains('id', (int)$groupId);
-
-        $groupsList = collect($groups)->map(function($group) {
-            return 'Screen name: ' . $group['screen_name'] . ', ID: ' . $group['id'];
-        })->toArray();
-
-        return response()->json([
-            'exists' => $groupExists,
-            'message' => $groupExists 
-                ? "Группа с ID {$groupId} существует в вашем списке групп."
-                : "Группа с ID {$groupId} не найдена в вашем списке групп.",
-            'groups' => $groupsList
+        $response = Http::get('https://api.vk.com/method/groups.get', [
+            'user_id' => $userId,
+            'access_token' => $accessToken,
+            'v' => $version,
+            'extended' => 1,
         ]);
-    } else {
-        return response()->json(['error' => 'Failed to fetch groups or invalid response from VK API']);
+
+        Log::info('VK API response:', $response->json());
+
+        if (isset($response['response']['items'])) {
+            $groups = $response['response']['items'];
+            $groupExists = collect($groups)->contains('id', (int)$groupId);
+
+            if ($groupExists) {
+                // Сохранение группы в базе данных
+                UserGroup::create([
+                    'user_id' => $userId,
+                    'group_link' => $groupLink,
+                    'group_link_id' => $groupId,
+                ]);
+
+                return response()->json([
+                    'exists' => true,
+                    'message' => "Группа с ID {$groupId} существует и была сохранена.",
+                ]);
+            } else {
+                return response()->json([
+                    'exists' => false,
+                    'message' => "Группа с ID {$groupId} не найдена в вашем списке групп.",
+                ]);
+            }
+        } else {
+            return response()->json(['error' => 'Failed to fetch groups or invalid response from VK API']);
+        }
     }
-}
+
+
 // public function saveGroup(Request $request)
 // {
 //     // Получаем данные из запроса

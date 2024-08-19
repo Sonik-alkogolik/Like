@@ -6,18 +6,6 @@ use App\Http\Controllers\ApiVkCustomController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\VkController;
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-|
-| Here is where you can register web routes for your application. These
-| routes are loaded by the RouteServiceProvider within a group which
-| contains the "web" middleware group. Now create something great!
-|
-*/
-
-
 Auth::routes();
 Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
 Route::get('/profile', [UserProfileController::class, 'showProfile'])->middleware('auth');
@@ -30,7 +18,7 @@ Route::post('/get-groups', [VkController::class, 'getGroups']);
 Route::post('/check-group', [VkController::class, 'checkGroup']);
 Route::post('/get-groups-and-check-group', [VkController::class, 'getGroupsAndCheckGroup']);
 Route::post('/save-group', [VkController::class, 'saveGroup'])->name('save-group');
-Route::get('/debug-group-data', [VkController::class, 'debugGroupData'])->name('debug.group.data');
+
 
 
 

@@ -1,36 +1,36 @@
 $(document).ready(function() {
  
 
-     $('#get-groups').click(function() {
-        $.ajax({
-            url: getGroupsUrl,
-            type: 'POST',
-            data: {
-                user_id: userId,
-                access_token: 'vk1.a.3WgPlNrH6DgZwgYKwFVJA63Is_2kkcAmSL_Ng9Oh00uFPblO-n6LbF3xxVBOoIoL9c0yuhycoET-Ofz2959vbduOxv3cdi87KyhlV-AAKb4-CrJHQYaox2uDkxR949SonlOaI1sKiLisEL58P0zmUr3GrmI4JI5je3p_00OP-5U0hr6ZxjhFXAaRfGGMK7P1y0QLjplxYonC0gqhlbOLng',
-                v: '5.199',
-                extended: 1
-            },
-            success: function(response) {
-                var groupsList = $('#groups-list');
-                groupsList.empty();
+    //  $('#get-groups').click(function() {
+    //     $.ajax({
+    //         url: getGroupsUrl,
+    //         type: 'POST',
+    //         data: {
+    //             user_id: userId,
+    //             access_token: 'vk1.a.3WgPlNrH6DgZwgYKwFVJA63Is_2kkcAmSL_Ng9Oh00uFPblO-n6LbF3xxVBOoIoL9c0yuhycoET-Ofz2959vbduOxv3cdi87KyhlV-AAKb4-CrJHQYaox2uDkxR949SonlOaI1sKiLisEL58P0zmUr3GrmI4JI5je3p_00OP-5U0hr6ZxjhFXAaRfGGMK7P1y0QLjplxYonC0gqhlbOLng',
+    //             v: '5.199',
+    //             extended: 1
+    //         },
+    //         success: function(response) {
+    //             var groupsList = $('#groups-list');
+    //             groupsList.empty();
 
-                // Проверяем, есть ли в ответе группы
-                if (response.response && response.response.items) {
-                    $.each(response.response.items, function(index, group) {
-                        // Извлекаем и отображаем screen_name и id
-                        var listItem = $('<li>').text('Screen name: ' + group.screen_name + ', ID: ' + group.id);
-                        groupsList.append(listItem);
-                    });
-                } else {
-                    groupsList.html('<p>Группы не найдены.</p>');
-                }
-            },
-            error: function(xhr, status, error) {
-                $('#groups-list').html('<p>Произошла ошибка: ' + error + '</p>');
-            }
-        });
-    });
+    //             // Проверяем, есть ли в ответе группы
+    //             if (response.response && response.response.items) {
+    //                 $.each(response.response.items, function(index, group) {
+    //                     // Извлекаем и отображаем screen_name и id
+    //                     var listItem = $('<li>').text('Screen name: ' + group.screen_name + ', ID: ' + group.id);
+    //                     groupsList.append(listItem);
+    //                 });
+    //             } else {
+    //                 groupsList.html('<p>Группы не найдены.</p>');
+    //             }
+    //         },
+    //         error: function(xhr, status, error) {
+    //             $('#groups-list').html('<p>Произошла ошибка: ' + error + '</p>');
+    //         }
+    //     });
+    // });
 
 //     $('#check-group').click(function() {
 //     // Получаем ID группы из div
@@ -129,6 +129,45 @@ $(document).ready(function() {
 //         }
 //     });
 //     });
+
+$('#save-group').click(function(e) {
+    e.preventDefault();
+
+    var accessToken = 'vk1.a.3WgPlNrH6DgZwgYKwFVJA63Is_2kkcAmSL_Ng9Oh00uFPblO-n6LbF3xxVBOoIoL9c0yuhycoET-Ofz2959vbduOxv3cdi87KyhlV-AAKb4-CrJHQYaox2uDkxR949SonlOaI1sKiLisEL58P0zmUr3GrmI4JI5je3p_00OP-5U0hr6ZxjhFXAaRfGGMK7P1y0QLjplxYonC0gqhlbOLng';
+    var version = '5.199';
+    var groupLink = $('#group-link').val();
+    console.log(groupLink);
+    console.log(getCheckGroupsUrl);
+    
+    
+    // Получаем ID группы из ссылки
+    var groupIdMatch = groupLink.match(/vk\.com\/(.*)/);
+    var groupId = groupIdMatch ? groupIdMatch[1] : null;
+
+    if (!groupId) {
+        alert('Пожалуйста, введите правильную ссылку на группу.');
+        return;
+    }
+
+    $.ajax({
+        url: getCheckGroupsUrl,
+        type: 'POST',
+        data: {
+            user_id: userId,
+            access_token: accessToken,
+            v: version,
+            group_id: groupId,
+            group_link: groupLink
+        },
+        success: function(response) {
+            console.log(response.message);
+            
+        },
+        error: function(xhr) {
+            console.log(xhr.responseJSON.error);
+        }
+    });
+});
 
 
 });

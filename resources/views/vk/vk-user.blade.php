@@ -60,6 +60,7 @@
 @if(!empty($user->vk_user_id))
 <script>
     var getGroupsUrl = '{{ url('/get-groups') }}';
+    var getCheckGroupsUrl = '{{ url('/getGroupsAndCheckGroup') }}';
     var userId = @json($user->vk_user_id);
 </script>
      @vite('resources/js/app.js')
