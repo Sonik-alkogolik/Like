@@ -1,0 +1,11 @@
+RewriteEngine On
+RewriteBase /app/Like/
+
+RewriteRule ^index\.php$ - [L]
+
+# Добавляем проверку, чтобы избежать перенаправления файлов и директорий, которые существуют на сервере
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+
+# Перенаправляем все остальные запросы на index.php
+RewriteRule ^(.*)$ index.php [L]

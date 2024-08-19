@@ -1,0 +1,36 @@
+[33mcommit b284b33e799485b97a2f9e4b1f2067abcdd48c25[m[33m ([m[1;36mHEAD -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Merge: 718b4c4 e30d1ec
+Author: BelickijDmitry <belickij@jam-it.ru>
+Date:   Sat May 4 14:33:09 2024 +0300
+
+    vk-Auth
+
+[33mcommit 718b4c4aed2df616204c7b4b4b30984f253e4a0c[m
+Author: BelickijDmitry <belickij@jam-it.ru>
+Date:   Sat May 4 14:01:50 2024 +0300
+
+    обавление user в базу
+
+[33mcommit e30d1ec3b6fea910406cf7332e34ada12724dedc[m
+Author: BelickijDmitry <belickij@jam-it.ru>
+Date:   Mon Apr 29 17:29:51 2024 +0300
+
+    Добавлен API VK
+
+[33mcommit f1765f954b312617eec3bbf91e80c49a3b15aab2[m
+Author: BelickijDmitry <belickij@jam-it.ru>
+Date:   Mon Apr 29 11:42:59 2024 +0300
+
+    Добавлены страницы профиля пользователя
+
+[33mcommit c061472f16113ce80e6b9c0db64b9487028c6526[m
+Author: BelickijDmitry <belickij@jam-it.ru>
+Date:   Sat Apr 6 14:34:29 2024 +0300
+
+    переменные env
+
+[33mcommit 2d36a0cd60d267e860b03ec07b0442ef4d735b32[m
+Author: BelickijDmitry <belickij@jam-it.ru>
+Date:   Sat Apr 6 13:55:26 2024 +0300
+
+    Initial commit
