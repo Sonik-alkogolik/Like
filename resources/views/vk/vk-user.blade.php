@@ -15,7 +15,7 @@
         <p>Нет данных о странице VK.</p>
     @endif
 
-    <div id="210152438">Группа id="110152438"</div>
+    <div id="group_num">Группа id="110152438"</div>
     <!-- Выводим группы пользователя -->
     <h3>Ваши группы VK</h3>
     @if($groups && count($groups) > 0)
@@ -60,7 +60,7 @@
 @if(!empty($user->vk_user_id))
 <script>
     var getGroupsUrl = '{{ url('/get-groups') }}';
-    var getCheckGroupsUrl = '{{ url('/getGroupsAndCheckGroup') }}';
+    var checkgroup = '{{ url('/check-group') }}';
     var userId = @json($user->vk_user_id);
 </script>
      @vite('resources/js/app.js')
