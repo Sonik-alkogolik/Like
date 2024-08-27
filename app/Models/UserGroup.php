@@ -12,12 +12,9 @@ class UserGroup extends Model
     protected $table = 'user_groups';
 
     protected $fillable = [
-        'user_id',
-        'group_id', 
+        'user_id_vk',
+        'group_id',
+        'group_link', 
     ];
 
-    public function user()
-    {
-        return $this->belongsTo(User::class, 'user_id');
-    }
 }

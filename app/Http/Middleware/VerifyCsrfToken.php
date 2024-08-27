@@ -17,5 +17,6 @@ class VerifyCsrfToken extends Middleware
         '/check-group',
         '/save-group',
         '/getGroupsAndCheckGroup',
+        '/SaveUserGroup',
     ];
 }

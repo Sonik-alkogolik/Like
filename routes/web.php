@@ -16,8 +16,11 @@ Route::post('/vk-save-link', [ApiVkCustomController::class, 'saveVkLink'])->name
 Route::post('/vk-delete', [ApiVkCustomController::class, 'deleteVkLink'])->name('vk.delete');
 Route::post('/get-groups', [VkController::class, 'getGroups']);
 Route::post('/check-group', [VkController::class, 'checkGroup']);
-Route::post('/getGroupsAndCheckGroup', [VkController::class, 'getGroupsAndCheckGroup']);
-Route::post('/save-group', [VkController::class, 'saveGroup'])->name('save-group');
+Route::post('/SaveUserGroup', [VkController::class, 'SaveUserGroup']);
+Route::get('/user-groups', [ApiVkCustomController::class, 'displayUserGroups'])->name('vk.vk-groups');
+
+
+
 
 
 

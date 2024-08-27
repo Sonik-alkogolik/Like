@@ -256,9 +256,6 @@ $('#save-group').click(function(e) {
     var accessToken = 'vk1.a.3WgPlNrH6DgZwgYKwFVJA63Is_2kkcAmSL_Ng9Oh00uFPblO-n6LbF3xxVBOoIoL9c0yuhycoET-Ofz2959vbduOxv3cdi87KyhlV-AAKb4-CrJHQYaox2uDkxR949SonlOaI1sKiLisEL58P0zmUr3GrmI4JI5je3p_00OP-5U0hr6ZxjhFXAaRfGGMK7P1y0QLjplxYonC0gqhlbOLng';
     var version = '5.199';
     var groupLink = $('#group-link').val();
-    console.log(groupLink);
-    console.log(getCheckGroupsUrl);
-    
     
     // Получаем ID группы из ссылки
     var groupIdMatch = groupLink.match(/vk\.com\/(.*)/);
@@ -270,7 +267,7 @@ $('#save-group').click(function(e) {
     }
 
     $.ajax({
-        url: getCheckGroupsUrl,
+        url: SaveUserGroup,
         type: 'POST',
         data: {
             user_id: userId,

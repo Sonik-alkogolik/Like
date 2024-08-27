@@ -8,7 +8,9 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\RequestException;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
+use Illuminate\Support\Facades\Log;
 use App\Models\VkPageUser;
+use App\Models\UserGroup;
 
 class ApiVkCustomController extends Controller
 {
@@ -70,8 +72,8 @@ class ApiVkCustomController extends Controller
         $params = [
             'access_token' => $this->accessToken,
             'user_id' => $userId,
-            'v' => '5.199', // Убедитесь, что используете правильную версию API
-            'extended' => 1, // Включаем дополнительные данные о группах
+            'v' => '5.199', 
+            'extended' => 1,
         ];
     
         try {
@@ -116,4 +118,25 @@ class ApiVkCustomController extends Controller
         return redirect()->route('login');
     }
 }
+
+public function displayUserGroups()
+{
+    $userId = auth()->id(); // Получаем текущего авторизованного пользователя
+    dd($userId);
+    // Логируем ID пользователя для проверки
+    Log::info('Current User ID:', ['user_id' => $userId]);
+    if ($userId) {
+        // Получаем группы пользователя из базы данных
+        $userGroups = UserGroup::where('user_id', $userId)->get();
+     
+        // Логируем данные для отладки
+        Log::info('UserGroups:', $userGroups->toArray());
+
+        // Возвращаем вид с данными
+        return view('vk.vk-groups', compact('userGroups')); 
+    } else {
+        return redirect()->route('login');
+    }
+}
+
 }

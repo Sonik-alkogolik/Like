@@ -16,22 +16,6 @@
     @endif
 
     <div id="group_num">Группа id="110152438"</div>
-    <!-- Выводим группы пользователя -->
-    <h3>Ваши группы VK</h3>
-    @if($groups && count($groups) > 0)
-    <ul>
-        @foreach($groups as $group)
-            <li>
-                <a href="https://vk.com/{{ $group['screen_name'] }}" target="_blank">
-                    <img src="{{ $group['photo_50'] }}" alt="{{ $group['name'] }}">
-                    {{ $group['name'] }}
-                </a>
-            </li>
-        @endforeach
-    </ul>
-@else
-    <p>Нет групп для отображения.</p>
-@endif
 
 <button id="check-group">Проверить группу</button>
 <div id="group-check-result"></div>
@@ -42,7 +26,7 @@
     <input type="text" id="group-link" placeholder="Введите ссылку на группу">
     <button id="save-group">Сохранить группу</button>
 
-<div id="save-group-result"></div>
+      <div id="save-group-result"></div>
 
     <!-- Кнопка для авторизации через VK -->
     <form id="auth-vk-form" action="{{ route('vk.auth') }}" method="GET" style="display: inline;">
@@ -61,6 +45,7 @@
 <script>
     var getGroupsUrl = '{{ url('/get-groups') }}';
     var checkgroup = '{{ url('/check-group') }}';
+    var SaveUserGroup = '{{ url('/SaveUserGroup') }}';
     var userId = @json($user->vk_user_id);
 </script>
      @vite('resources/js/app.js')

@@ -10,6 +10,16 @@ use App\Models\UserGroup;
 
 class VkController extends Controller
 {
+
+    protected $apiToken;
+
+    public function __construct()
+    {
+        // Инициализируем токен API в конструкторе
+        $this->apiToken = 'vk1.a.3WgPlNrH6DgZwgYKwFVJA63Is_2kkcAmSL_Ng9Oh00uFPblO-n6LbF3xxVBOoIoL9c0yuhycoET-Ofz2959vbduOxv3cdi87KyhlV-AAKb4-CrJHQYaox2uDkxR949SonlOaI1sKiLisEL58P0zmUr3GrmI4JI5je3p_00OP-5U0hr6ZxjhFXAaRfGGMK7P1y0QLjplxYonC0gqhlbOLng';
+    }
+
+    
     public function getGroups(Request $request)
     {
         $userId = $request->input('user_id');
@@ -76,74 +86,102 @@ class VkController extends Controller
     }
     
 
- 
- public function getGroupsAndCheckGroup(Request $request)
-{
-    Log::info('Request data:', $request->all());
+    public function saveUserGroup(Request $request)
+    {
+        // Статичные данные
+        // $userIdVk = '222222222';
+        // $groupId = '33333333';
+        // $groupLink = 'https://vk.com/science_technology';
 
-    $vkUserId = $request->input('user_id');
-    $accessToken = $request->input('access_token');
-    $version = $request->input('v');
-    $groupLink = $request->input('group_link');
+        $userIdVk = $request->input('user_id'); 
+        $groupLink = $request->input('group_link');
+        Log::info('User ID VK:', ['user_id' => $userIdVk]);
+        Log::info('Group Link:', ['group_link' => $groupLink]);
 
-    // Извлечь короткое имя группы из ссылки
-    $groupShortName = parse_url($groupLink, PHP_URL_PATH);
-    $groupShortName = ltrim($groupShortName, '/'); // Удалить начальный '/'
+       $groupShortName = ltrim(parse_url($groupLink, PHP_URL_PATH), '/');
+       $response = Http::get('https://api.vk.com/method/groups.getById', [
+           'group_ids' => $groupShortName,
+           'access_token' => $this->apiToken,
+           'v' => '5.199',
+       ]);
 
-    // Получить числовой group_id по короткому имени
-    $response = Http::get('https://api.vk.com/method/groups.getById', [
-        'group_ids' => $groupShortName,
-        'access_token' => $accessToken,
-        'v' => $version,
-    ]);
+       $data = $response->json();
+       $groups = $data['response']['groups'] ?? [];
+       $groupId = !empty($groups) ? $groups[0]['id'] : null;
+       Log::info('Extracted Group ID:', ['group_id' => $groupId]);
+    
+        // Проверка, существует ли запись с такими данными
+        $exists = DB::table('user_groups')
+            ->where('user_id_vk', $userIdVk)
+            ->where('group_id', $groupId)
+            ->exists();
+    
+        if (!$exists) {
+           
 
-    Log::info('VK API response:', $response->json());
 
-    if ($response->successful()) {
-        $data = $response->json();
-
-        if (isset($data['response']['groups'][0]['id'])) {
-            $groupId = $data['response']['groups'][0]['id'];
-
-            // Получаем user_id из vk_page_users
-            $vkUser = DB::table('vk_page_users')->where('vk_user_id', $vkUserId)->first();
-
-            if ($vkUser) {
-                $userId = $vkUser->user_id;
-
-                // Проверяем, существует ли уже такая запись
-                $existingGroup = DB::table('user_groups')
-                    ->where('user_id', $userId)
-                    ->where('group_id', $groupId)
-                    ->first();
-
-                if (!$existingGroup) {
-                    // Вставляем данные в таблицу user_groups
-                    DB::table('user_groups')->insert([
-                        'user_id' => $userId,
-                        'group_id' => $groupId,
-                        'created_at' => now(),
-                        'updated_at' => now(),
-                    ]);
-
-                    Log::info("Группа с ID {$groupId} успешно сохранена.");
-                } else {
-                    Log::info("Запись для группы с ID {$groupId} и user_id {$userId} уже существует.");
-                }
-            } else {
-                Log::error('User not found in vk_page_users for vk_user_id: ' . $vkUserId);
-            }
-        } else {
-            Log::error('No group found or invalid response structure from VK API.', $data);
+            // Запись данных, если записи нет
+            DB::table('user_groups')->insert([
+                'user_id_vk' => $userIdVk,
+                'group_id' => $groupId,
+                'group_link' => $groupLink,
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
+    
+            return response()->json(['success' => 'UserGroup saved successfully.']);
         }
-    } else {
-        Log::error('VK API request failed.', [
-            'status' => $response->status(),
-            'body' => $response->body(),
-        ]);
+    
+        // Если запись уже существует, ничего не возвращаем
+        return response()->json(['message' => 'UserGroup already exists.']);
     }
-}
-
+ 
+    // public function saveUserGroup(Request $request)
+    // {
+    //     Log::info('Request data:', $request->all());
+    
+    //     $userIdVk = $request->input('user_id'); 
+    //     $groupLink = $request->input('group_link');
+    
+    //     Log::info('User ID VK:', ['user_id' => $userIdVk]);
+    //     Log::info('Group Link:', ['group_link' => $groupLink]);
+    
+    //     // Здесь можно добавить логику для проверки существования пользователя по user_id_vk
+    
+    //     // Запрос к VK API
+    //     $groupShortName = ltrim(parse_url($groupLink, PHP_URL_PATH), '/');
+    
+    //     $response = Http::get('https://api.vk.com/method/groups.getById', [
+    //         'group_ids' => $groupShortName,
+    //         'access_token' => $this->apiToken,
+    //         'v' => '5.199',
+    //     ]);
+    
+    //     $data = $response->json();
+    //     Log::info('VK API Full Response:', $data);
+    
+    //     if (isset($data['error'])) {
+    //         Log::error('VK API error:', ['error' => $data['error']]);
+    //         return response()->json(['error' => 'VK API error: ' . $data['error']['error_msg']], 400);
+    //     }
+    
+    //     // Извлечение group_id
+    //     $groups = $data['response']['groups'] ?? [];
+    //     $groupId = !empty($groups) ? $groups[0]['id'] : null;
+    //     Log::info('Extracted Group ID:', ['group_id' => $groupId]);
+    
+    //     // Сохранение данных
+    //     if ($groupId && $userIdVk && $groupLink) {
+    //         UserGroup::create([
+    //             'group_id' => $groupId,
+    //             'user_id_vk' => $userIdVk, // Обновлено на user_id_vk
+    //             'group_link' => $groupLink,
+    //         ]);
+    //         Log::info('UserGroup saved successfully.');
+    //     } else {
+    //         Log::warning('Failed to save UserGroup due to missing data.');
+    //     }
+    // }
 
 // public function saveGroup(Request $request)
 // {
@@ -237,14 +275,5 @@ class VkController extends Controller
 // }
 
 
-public function showGroup()
-{
-    $group = DB::table('user_groups')->where('user_id', auth()->id())->first();
-
-    return view('vk.vk-user', [
-        'group_id' => $group->group_id ?? null,
-        'group_link' => $group->group_link ?? null,
-    ]);
-}
 
 }
