@@ -118,9 +118,6 @@ class VkController extends Controller
     
         if (!$exists) {
            
-
-
-            // Запись данных, если записи нет
             DB::table('user_groups')->insert([
                 'user_id_vk' => $userIdVk,
                 'group_id' => $groupId,

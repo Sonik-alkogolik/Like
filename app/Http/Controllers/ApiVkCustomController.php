@@ -120,23 +120,18 @@ class ApiVkCustomController extends Controller
 }
 
 public function displayUserGroups()
-{
-    $userId = auth()->id(); // Получаем текущего авторизованного пользователя
-    dd($userId);
-    // Логируем ID пользователя для проверки
-    Log::info('Current User ID:', ['user_id' => $userId]);
-    if ($userId) {
-        // Получаем группы пользователя из базы данных
-        $userGroups = UserGroup::where('user_id', $userId)->get();
-     
-        // Логируем данные для отладки
-        Log::info('UserGroups:', $userGroups->toArray());
+    {
+        // Проверка аутентификации пользователя
+        if (Auth::check()) {
+            // Извлечение данных из таблицы user_groups
+            $userGroups = DB::table('user_groups')->get();
 
-        // Возвращаем вид с данными
-        return view('vk.vk-groups', compact('userGroups')); 
-    } else {
-        return redirect()->route('login');
+            // Передача данных в шаблон
+            return view('vk.vk-groups', compact('userGroups'));
+        } else {
+            // Перенаправление на страницу входа, если пользователь не аутентифицирован
+            return redirect()->route('login');
+        }
     }
-}
 
 }
