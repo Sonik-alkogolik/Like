@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\UserGroup;
+use Illuminate\Support\Facades\Log;
 
 
 class VkController extends Controller
@@ -15,7 +16,7 @@ class VkController extends Controller
 
     public function __construct()
     {
-        // Инициализируем токен API в конструкторе
+       
         $this->apiToken = 'vk1.a.3WgPlNrH6DgZwgYKwFVJA63Is_2kkcAmSL_Ng9Oh00uFPblO-n6LbF3xxVBOoIoL9c0yuhycoET-Ofz2959vbduOxv3cdi87KyhlV-AAKb4-CrJHQYaox2uDkxR949SonlOaI1sKiLisEL58P0zmUr3GrmI4JI5je3p_00OP-5U0hr6ZxjhFXAaRfGGMK7P1y0QLjplxYonC0gqhlbOLng';
     }
 
@@ -57,7 +58,7 @@ class VkController extends Controller
             'extended' => $extended,
         ]);
     
-        Log::info('VK API Response:', $response->json());
+       // Log::info('VK API Response:', $response->json());
     
         if ($response->successful()) {
             $groups = collect($response->json()['response']['items'])->map(function($group) {
@@ -112,14 +113,14 @@ class VkController extends Controller
     
         // Проверка, существует ли запись с такими данными
         $exists = DB::table('user_groups')
-            ->where('user_id_vk', $userIdVk)
+            ->where('user_id', $userIdVk)
             ->where('group_id', $groupId)
             ->exists();
     
         if (!$exists) {
            
             DB::table('user_groups')->insert([
-                'user_id_vk' => $userIdVk,
+                'user_id' => $userIdVk,
                 'group_id' => $groupId,
                 'group_link' => $groupLink,
                 'created_at' => now(),

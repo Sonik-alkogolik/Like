@@ -4,11 +4,14 @@
 <div class="container">
     <h2>Профиль VK</h2>
 
+    <!-- Выводим сообщение об ошибке, если оно есть в сессии -->
+    @if(session('message'))
+        <p style="color: red;">{{ session('message') }}</p>
+    @endif
     <!-- Выводим ссылку на страницу пользователя или его ID -->
     @if($users_vk_serfing->isNotEmpty())
         @foreach($users_vk_serfing as $user)
             <p>Ваш VK ID: {{ $user->vk_user_id }}</p>
-          
             <p>Ссылка на страницу VK: <a href="{{ $user->vk_link }}" target="_blank">{{ $user->vk_link }}</a></p>
         @endforeach
     @else

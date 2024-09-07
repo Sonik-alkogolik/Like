@@ -22,7 +22,7 @@ class ApiVkCustomController extends Controller
         $this->client = new Client();
         $this->accessToken = env('VKONTAKTE_ACCESS_TOKEN');
     }
-
+ 
     public function index()
     {
         return Socialite::driver('vkontakte')->scopes(['id'])->redirect();
@@ -31,24 +31,50 @@ class ApiVkCustomController extends Controller
     public function callback()
     {
         $user_vk = Socialite::driver('vkontakte')->stateless()->user();
+        Log::info('Does group exist?');
         $this->saveVkLink($user_vk);
         return redirect()->route('vk.vk-user');
     }
 
+    // public function saveVkLink($user_vk)
+    // {
+    //     $userId = Auth::id();
+    //     $existingUser = VkPageUser::where('user_id', $userId)->first();
+        
+
+    //     if ($existingUser) {
+    //         return redirect()->route('vk.vk-user', ['user_vk' => $existingUser]);
+    //     } else {
+    //         $vkLink = "https://vk.com/id" . $user_vk->getId();
+    //         VkPageUser::create([
+    //             'user_id' => $userId,
+    //             'vk_link' => $vkLink,
+    //             'vk_user_id' => $user_vk->getId(),
+    //         ]);
+    //     }
+    // }
     public function saveVkLink($user_vk)
     {
         $userId = Auth::id();
-        $existingUser = VkPageUser::where('user_id', $userId)->first();
-
+        $vkUserId = $user_vk->getId();
+        $vkLink = "https://vk.com/id" . $vkUserId;
+    
+        // Проверяем, существует ли уже запись с таким vk_user_id
+        $existingUser = VkPageUser::where('vk_user_id', $vkUserId)->first();
+    
         if ($existingUser) {
-            return redirect()->route('vk.vk-user', ['user_vk' => $existingUser]);
+            $message = "Страница привязана к другому аккаунту";
+            return redirect()->route('vk.vk-user')->with('message', 'Страница привязана к другому аккаунту');
         } else {
-            $vkLink = "https://vk.com/id" . $user_vk->getId();
+            // Если записи нет, создаем новую
             VkPageUser::create([
                 'user_id' => $userId,
                 'vk_link' => $vkLink,
-                'vk_user_id' => $user_vk->getId(),
+                'vk_user_id' => $vkUserId,
             ]);
+    
+            // Можете вернуть другое представление или перенаправить, если необходимо
+            return redirect()->route('vk.vk-user', ['user_vk' => $existingUser]);
         }
     }
 
@@ -106,7 +132,7 @@ class ApiVkCustomController extends Controller
 
         // Проверяем, есть ли ошибки
         if (empty($groups)) {
-            \Log::error('VK API error: ' . 'No groups found or there was an issue with the request.');
+           //Log::error('VK API error: ' . 'No groups found or there was an issue with the request.');
         }
 
         // Возвращаем вид с данными
